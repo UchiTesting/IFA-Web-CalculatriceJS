@@ -70,7 +70,7 @@ class Calculatrice {
                 break; // Useless yet rigorous. User will click on an operation before adding further operand.
             default:
                 this.resultatStr = this.operande;
-                this.resultat = Number(this.resultatStr);
+                this.resultat = Number(this.resultatStr); //
         }
 
         this.resultatStr = this.resultat.toString();
@@ -162,6 +162,7 @@ class Calculatrice {
     // Fonctions liées aux opérations complémentaires
     clearAllOps() {
         this.resultat = 0;
+        this.resultatStr = "0";
         this.clearOperand();
         this.operation = '+';
 
