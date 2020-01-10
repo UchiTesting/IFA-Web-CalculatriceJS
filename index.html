@@ -6,12 +6,18 @@
     <title>Calculatrice</title>
     <link rel="stylesheet" href="css/style.css" />
 </head>
+<!-- Chargement du programme au chargement de la page via la fonction main() -->
 
 <body onload="main()">
+    <!-- Conteneur global de la calculatrice -->
     <div class="calculatrice">
+        <!-- Conteneur pour l'affichage -->
         <div class="affichage" id="affichage">0</div>
+        <!-- Conteneur pour les boutons -->
         <div class="boutons">
+            <!-- Conteneur  pour les boutons numériques -->
             <div class="btnNum">
+                <!-- Les boutons numériques sont divisés en lignes -->
                 <div class="btnLine">
                     <div class="bouton" onclick="calc.addDigit('7')">7</div>
                     <div class="bouton" onclick="calc.addDigit('8')">8</div>
@@ -33,6 +39,7 @@
                     <div class="bouton" onclick="calc.invertSign()">±</div>
                 </div>
             </div>
+            <!-- Conteneur pour les boutons de fonction -->
             <div class="btnFunc">
                 <div class="btnLine"></div>
                 <div class="bouton" onclick="calc.setOperation('+')">+</div>
@@ -46,6 +53,7 @@
             </div>
         </div>
     </div>
+    <!-- Intégration du script de la calculatrice -->
     <script src="js/Calculatrice.js"></script>
 </body>
 
