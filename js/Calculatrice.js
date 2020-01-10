@@ -3,66 +3,54 @@
 * Date: 09/01/2020                                                             *
 * Description: Calculatrice JavaScript.                                        *
 * Version: 0.0a ← C'est-à-àdire bon pour la prod.                              *
+* Dernière Modif.: 10/01/2020                                                  *
 \******************************************************************************/
 
 class Calculatrice {
     // Constructeur
     constructor(resultat) {
         this.resultat = resultat;
+        this.resultatStr = resultat.toString();
         this.operande = "0";
+        // La toute première opération doit être une addition pour stocker correctement la valeur dans resultat. Elle sera ensuite écrasé par l'utilisation des boutons de la calculatrice.
         this.operation = '+';
     }
 
     // OPERATIONS
     add(operande) {
-        this.resultat = this.resultat + operande;
+        this.resultat = Number(this.resultat) + Number(operande);
         return this.resultat;
     }
 
     sub(operande) {
-        this.resultat = this.resultat - operande;
-        return this.resultat;
+        this.resultat = Number(this.resultat) - Number(operande);
+        return Number(this.resultat);
     }
 
     mult(operande) {
-        this.resultat = this.resultat * operande;
-        return this.resultat;
+        this.resultat = Number(this.resultat) * Number(operande);
+        return Number(this.resultat);
     }
 
     div(operande) {
         if (operande != 0) {
-            this.resultat = this.resultat / operande;
-            return this.resultat;
+            this.resultat = Number(this.resultat) / Number(operande);
+            return Number(this.resultat);
         }
 
-        return this.resultat;
+        //return Number(this.resultat);
+        this.resultat = "DIV par 0";
     }
 
+    // Applique l'opération puis met à jour avec la nouvelle opération à prévoir.
     setOperation(op) {
 
         this.applyOperation();
-
-        switch (this.operation) {
-            case "+":
-                this.operation = "+";
-                break;
-            case '-':
-                this.operation = "-";
-                break;
-            case '*':
-                this.operation = "*";
-                break;
-            case '/':
-                this.operation = "/";
-                break;
-            case '=':
-                this.operation = '=';
-                break; // Useless yet rigorous.
-            default:
-                this.result = this.operande;
-        }
+        this.operation = op;
+        this.updateDisplayWithResult();
     }
 
+    // Applique effectivement l'opération entre le résultat intermédiaire et operande en cours. Remet l'opérande à 0 après avoir fait l'opération.
     applyOperation() {
         switch (this.operation) {
             case "+":
@@ -77,24 +65,48 @@ class Calculatrice {
             case '/':
                 this.div(this.operande);
                 break;
+            case '=':
+                this.operation = '=';
+                break; // Useless yet rigorous. User will click on an operation before adding further operand.
+            default:
+                this.resultatStr = this.operande;
+                this.resultat = Number(this.resultatStr);
         }
+
+        this.resultatStr = this.resultat.toString();
+        this.clearOperand();
     }
 
     // Fonctions sur les chaines de l'affichage.
+
+    // Ajoute un digit à l'opérande selon les règles prévues.
     addDigit(digit) {
+        if (this.operation == '=')
+            this.clearAllOps();
+
         if (this.operande == "0") {
-            this.operande = digit;
+            if (digit == '.') {
+                this.operande = this.operande + digit
+            } else {
+                this.operande = digit;
+            }
         } else {
-            if (!(this.operande.includes('.') && digit != '.')) {
-                this.operande = this.operande + digit;
+            // TODO
+            if (digit != '.') {
+                this.operande = this.operande + digit
+            } else {
+                if (!this.operande.includes('.')) {
+                    this.operande = this.operande + digit;
+
+                }
             }
 
         }
-        console.log("Operande: " + this.operande);
-        this.updateDisplay();
+        this.updateDisplayWithOperand();
         return this.operande;
     }
 
+    // Retire un digit à l'opérande. Si l'opérande est 0 alors ne fait rien.
     removeDigit() {
         // 
         if (this.operande.length > 1) {
@@ -103,46 +115,68 @@ class Calculatrice {
             this.operande = "0";
         }
 
-        this.updateDisplay();
+        this.updateDisplayWithOperand();
         return this.operande;
     }
 
+    // Inverse le signe de l'opération.
     invertSign() {
         // Si signe moins on supprime le moins du début.
-        if (this.operande.charAt(0) == "-") {
-            this.operande = this.operande.substring(1, this.operande.length);
+        if (this.operation == '=') {
+            //this.resultat.toString().
+            if (this.resultatStr.charAt(0) == "-") {
+                this.resultatStr = this.resultatStr.substring(1, this.resultatStr.length);
+            } else {
+                this.resultatStr = "-" + this.resultatStr;
+            }
+
+            this.resultat = Number(this.resultatStr);
+
+            this.updateDisplayWithResult();
         } else {
-            this.operande = "-" + this.operande;
+            if (this.operande.charAt(0) == "-") {
+                this.operande = this.operande.substring(1, this.operande.length);
+            } else {
+                this.operande = "-" + this.operande;
+            }
+
+            this.updateDisplayWithOperand();
         }
 
-        this.updateDisplay();
     }
 
     // Met à jour l'affichage
-    updateDisplay() {
+    updateDisplayWithResult() {
         let display = document.getElementById("affichage");
-        display.innerHTML = this.operande;
+        display.innerHTML = this.resultat;
+        this.dispInternals();
     }
 
-    /*/ Variante surchargée si on veut afficher un message.
-    updateDisplay(msg) {
-        this.operande = msg; //
-        this.updateDisplay();
-    }// Finalement non*/
+    // Met à jour l'affichage
+    updateDisplayWithOperand() {
+        let display = document.getElementById("affichage");
+        display.innerHTML = this.operande;
+        this.dispInternals();
+    }
 
     // Fonctions liées aux opérations complémentaires
     clearAllOps() {
         this.resultat = 0;
         this.clearOperand();
+        this.operation = '+';
 
-        this.updateDisplay();
+        this.updateDisplayWithResult(); // Indifférent. On aurait pu afficher l'opérande.
     }
 
     clearOperand() {
         this.operande = 0;
+        this.updateDisplayWithOperand();
     }
 
-
+    // Fonction ultra utile pour comprendre ce qui se passe et déboguer.
+    dispInternals() {
+        console.log("[ resultat: " + this.resultat + ", resultatStr: " + this.resultatStr + ", operation: " + this.operation + ", operande: " + this.operande + "]");
+    }
 }
 
 function main() {
